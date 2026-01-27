@@ -1,4 +1,4 @@
 ## Interface: 11503, 40400, 110000, 110002, 120000
-## Title: SharedMedia_MyMedia 
+## Title: SharedMedia_Nistaux
 ## Dependencies: SharedMedia 
-MyMedia.lua 
+SharedMedia_Nistaux.lua 
