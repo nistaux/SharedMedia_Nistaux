@@ -1,0 +1,165 @@
+# SharedMedia_Nistaux project guide
+
+_Last reviewed: 2026-03-18_
+
+## Start here
+
+`SharedMedia_Nistaux` is a small personal World of Warcraft media pack. It registers selected fonts, status-bar textures, and a border with `LibSharedMedia-3.0`, allowing any compatible addon to discover them.
+
+For a new task:
+
+1. Read `SharedMedia_Nistaux.toc` to confirm metadata, dependencies, and load order.
+2. Read `SharedMedia_Nistaux.lua`; it is the entire runtime implementation.
+3. Determine whether the requested asset is registered or merely packaged.
+4. Check [GitHub Issues](https://github.com/nistaux/SharedMedia_Nistaux/issues) for known work.
+5. Preserve the installed folder name and existing LibSharedMedia display names unless the task explicitly requires changing them.
+
+## Repository map
+
+| Path | Purpose |
+| --- | --- |
+| `SharedMedia_Nistaux.toc` | WoW addon metadata, dependency declaration, and file load order |
+| `SharedMedia_Nistaux.lua` | Obtains LibSharedMedia and registers the curated runtime media set |
+| `font/` | Packaged font files |
+| `statusbar/` | Packaged status-bar textures |
+| `border/` | Packaged border textures |
+| `background/` | Image inventory; currently not registered or loaded by this addon |
+| `sound/` | Reserved media directory; currently empty |
+| `README.md` | Human-facing project entry point |
+| `AGENTS.md` | Concise repository-local instructions for coding agents |
+| `docs/project-notes.md` | This technical guide and durable troubleshooting context |
+
+## Runtime architecture
+
+The addon has no UI, events, SavedVariables, configuration, localization, build system, or plugin modules. Its load path is linear:
+
+1. WoW reads `SharedMedia_Nistaux.toc`.
+2. The TOC requires `SharedMedia`, ensuring that dependency loads first.
+3. WoW executes `SharedMedia_Nistaux.lua`.
+4. Lua obtains `LibSharedMedia-3.0` through `LibStub`.
+5. Lua synchronously registers 1 border, 14 fonts, and 15 status-bar textures.
+6. Consumer addons query LibSharedMedia for those registered names.
+
+Most packaged files are inventory only and are not exposed through LibSharedMedia by this addon. Another addon can still reference a packaged media file directly by path. The installed addon folder must remain named `SharedMedia_Nistaux` because every registered asset path contains that folder name.
+
+Current dependency metadata is:
+
+```toc
+## Dependencies: SharedMedia
+```
+
+## Adding or changing media
+
+1. Put the media file in the directory matching its LibSharedMedia type.
+2. Add or update the corresponding `LSM:Register(mediaType, displayName, path)` call in `SharedMedia_Nistaux.lua`.
+3. Match the repository filename, extension, path, and case exactly.
+4. Use `Interface\AddOns\SharedMedia_Nistaux\...` as the in-game path prefix.
+5. Preserve an existing display name unless intentionally migrating consumer profiles; addons may persist that name in SavedVariables.
+6. Run the static validation below.
+7. Test the entry in game through an addon that consumes LibSharedMedia. Static checks cannot prove that WoW can decode or render the media.
+
+Keep generic media registration independent of consumer addons such as Details, ElvUI, or ToxiUI.
+
+## Details investigation
+
+There is no executable Details integration in the current repository or in any commit currently reachable from its Git history:
+
+- no Details global or API access;
+- no Details plugin registration;
+- no Details dependency in the TOC;
+- no Details load-state checks or event handlers.
+
+The only Details-named files are passive installer artwork:
+
+- `background/Installer/DetailsOne.blp`
+- `background/Installer/DetailsTwo.blp`
+
+Neither file is referenced by this addon's TOC or Lua. Media files cannot execute Details code and should not cause a Lua error when Details is absent. Removing them would reduce the assets distributed by this addon but would not change its current registrations.
+
+If an installed local copy produces a Details-related error, capture the complete Lua stack trace and compare `Interface/AddOns/SharedMedia_Nistaux` with this repository. A stale local Lua or XML file may not exist in Git.
+
+### If direct Details integration is added later
+
+Details consumes LibSharedMedia, so direct integration is normally unnecessary. If a future feature genuinely calls Details APIs:
+
+1. Declare `## OptionalDeps: Details`, not a required dependency.
+2. Keep ordinary LibSharedMedia registration outside the Details-specific path.
+3. Confirm Details has fully loaded and capability-check each API method before calling it.
+4. Make initialization idempotent.
+5. If Details may load later, retry only on `ADDON_LOADED` for the exact addon folder name `Details`.
+6. Do not force-load Details merely to offer optional styling.
+
+`OptionalDeps` provides load ordering when the other addon is available without making it mandatory. Current clients expose load state through `C_AddOns.IsAddOnLoaded`; `ADDON_LOADED` signals that an addon's Lua files have finished loading.
+
+## Known work
+
+GitHub Issues is the source of truth for actionable work:
+
+- [#1 Fix invalid status-bar texture registrations](https://github.com/nistaux/SharedMedia_Nistaux/issues/1) — three registrations use `.tga` paths while the packaged files use `.blp`.
+- [#2 Complete distribution metadata and bundled-media provenance](https://github.com/nistaux/SharedMedia_Nistaux/issues/2) — add release metadata and document licensing/redistribution status.
+
+Do not infer that an issue is resolved from this document; check its current GitHub state.
+
+## Validation
+
+### Before every change
+
+- Confirm which WoW client flavor and installed addon copy are involved.
+- Inspect the complete stack trace for reported Lua errors.
+- Check existing registrations before adding a duplicate display name.
+
+### Static repository checks
+
+```bash
+# Formatting and intended changes
+git diff --check
+git diff
+git status --short
+
+# Executable addon files
+find . -type f \( -iname '*.lua' -o -iname '*.toc' -o -iname '*.xml' \) \
+  -not -path './.git/*' -print
+
+# Details references in executable or metadata files
+rg -n -i 'details' --glob '*.lua' --glob '*.toc' --glob '*.xml' .
+```
+
+Audit all registered paths against the filesystem:
+
+```bash
+python - <<'PY'
+import re
+import subprocess
+from pathlib import Path
+
+source = Path("SharedMedia_Nistaux.lua").read_text()
+tracked = set(subprocess.run(
+    ["git", "ls-files"], check=True, capture_output=True, text=True
+).stdout.splitlines())
+for wow_path in re.findall(r"\[\[(Interface[^]]+)\]\]", source):
+    relative = wow_path.split("SharedMedia_Nistaux" + chr(92), 1)[1]
+    relative = relative.replace(chr(92), "/")
+    status = "OK" if relative in tracked and Path(relative).is_file() else "MISSING"
+    print(f"{status:7} {relative}")
+PY
+```
+
+### In-game validation
+
+- Enable `SharedMedia` and `SharedMedia_Nistaux` for the intended client flavor.
+- Confirm addon initialization produces no Lua errors.
+- Fetch/select changed media through at least one LibSharedMedia consumer.
+- Confirm fonts load and textures render rather than appearing blank or green.
+- If the failure only occurs in the installed copy, compare that directory with Git for stale files.
+
+## Releases
+
+Release versions use `YY.MM.dd` with an optional revision suffix, and Git tags use `vYY.MM.dd[.N]` (for example, `v26.01.27.1`). The TOC does not yet expose `## Version`; that work is tracked in [issue #2](https://github.com/nistaux/SharedMedia_Nistaux/issues/2).
+
+## Primary references
+
+- Blizzard-generated addon API documentation (`C_AddOns.IsAddOnLoaded`, `ADDON_LOADED`): <https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/AddOnsDocumentation.lua>
+- Warcraft Wiki TOC format and dependency directives: <https://warcraft.wiki.gg/wiki/The_TOC_Format>
+- Warcraft Wiki `ADDON_LOADED`: <https://warcraft.wiki.gg/wiki/ADDON_LOADED>
+- Details upstream repository and TOC: <https://github.com/Tercioo/Details-Damage-Meter> and <https://github.com/Tercioo/Details-Damage-Meter/blob/master/Details.toc>
+- Details UI API: <https://github.com/Tercioo/Details-Damage-Meter/blob/master/API%20UI.txt>
