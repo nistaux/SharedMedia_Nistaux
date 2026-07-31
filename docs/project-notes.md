@@ -1,6 +1,6 @@
 # SharedMedia_Nistaux project guide
 
-_Last reviewed: 2026-03-18_
+_Last reviewed: 2026-07-31_
 
 ## Start here
 
@@ -28,11 +28,14 @@ For a new task:
 | `README.md` | Human-facing project entry point |
 | `AGENTS.md` | Concise repository-local instructions for coding agents |
 | `docs/project-notes.md` | This technical guide and durable troubleshooting context |
-| [`docs/media-provenance.md`](media-provenance.md) | Bundled-media provenance, license evidence, and unresolved distribution decisions |
+| [`docs/media-provenance.md`](media-provenance.md) | Bundled-media provenance, license evidence, and owner disposition |
+| `tools/package_release.py` | Reproducible release builder and archive validator |
+| `tests/` | Standard-library packaging tests |
+| `.github/workflows/release.yml` | Tag-triggered test, package, and GitHub release workflow |
 
 ## Runtime architecture
 
-The addon has no UI, events, SavedVariables, configuration, localization, build system, or plugin modules. Its load path is linear:
+The runtime addon has no UI, events, SavedVariables, configuration, localization, or plugin modules. Repository release tooling is separate from its linear load path:
 
 1. WoW reads `SharedMedia_Nistaux.toc`.
 2. The TOC requires `SharedMedia`, ensuring that dependency loads first.
@@ -155,7 +158,35 @@ PY
 
 ## Releases
 
-Release versions use `YY.MM.dd` with an optional revision suffix, and Git tags use `vYY.MM.dd[.N]` (for example, `v26.01.27.1`). The TOC does not yet expose `## Version`; that work is tracked in [issue #2](https://github.com/nistaux/SharedMedia_Nistaux/issues/2).
+Future release tags use `vYY.M.D.<7-character-commit>`. Historical tags with numeric revision suffixes remain valid, but new tags use the short commit ID so the source is unambiguous. The source TOC contains `## Version: @project-version@`; the release builder replaces that token in memory with the tag version without the leading `v` and does not modify the working file.
+
+The custom archive contains one installable `SharedMedia_Nistaux/` root and this exact allowlist:
+
+- `SharedMedia_Nistaux.lua`
+- `SharedMedia_Nistaux.toc`
+- `README.md`
+- all tracked regular files under `border/`, `font/`, and `statusbar/`
+
+It excludes `background/`, `sound/`, `docs/`, `.git/`, `.github/`, `AGENTS.md`, `tools/`, `tests/`, and every other path. GitHub's automatic source archives cannot be filtered; users should install the custom ZIP asset instead.
+
+### Release procedure
+
+Finish all intended changes before choosing the version. Commit them, then run:
+
+```bash
+SHORT_SHA=$(git rev-parse --short=7 HEAD)
+TAG="v26.7.31.$SHORT_SHA"
+git tag "$TAG"
+
+python -m unittest discover -s tests -v
+python tools/package_release.py --tag "$TAG" --revision HEAD
+unzip -l "dist/SharedMedia_Nistaux-${TAG#v}.zip"
+sha256sum "dist/SharedMedia_Nistaux-${TAG#v}.zip"
+
+git push origin "$TAG"
+```
+
+Use the actual release date in the tag. The exact seven-character suffix must match the first seven characters of the resolved `--revision` commit; 1-6 digit suffixes are accepted only for historical numeric revisions. The builder reads the immutable Git commit tree, so staged, unstaged, and untracked files cannot affect the archive. If local validation fails after creating the local tag, fix the problem and recreate the tag on the corrected commit before pushing it. A pushed matching tag starts `.github/workflows/release.yml`, which repeats the tests, packages `HEAD` from the tagged checkout, creates the GitHub release, and uploads only the custom ZIP asset.
 
 ## Primary references
 

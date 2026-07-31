@@ -1,17 +1,28 @@
 # Bundled media provenance audit
 
-_Last reviewed: 2026-03-18_
+_Last reviewed: 2026-07-31_
 
 This document records evidence; it is not legal advice. A filename, visual similarity, copyright notice, or copy found in another addon does not by itself grant redistribution rights.
+
+## Owner disposition (2026-07-31)
+
+This is a personal media pack shared informally with friends. The owner has explicitly accepted the recorded uncertainty for that use and made these scope decisions:
+
+- do not continue auditing, deleting, or replacing unregistered assets;
+- do not remove, replace, or seek permission for restricted or unresolved registered media;
+- do not add a repository-wide license at this time;
+- package releases from the approved runtime allowlist and leave the remaining repository inventory unchanged.
+
+These are project-maintenance decisions, not conclusions about third-party rights. Do not repeatedly reopen the provenance or remediation work unless the owner asks, the intended use changes, or a rights holder raises a concern.
 
 ## Snapshot and status vocabulary
 
 After correcting the three `.tga`/`.blp` registration mismatches tracked in issue #1, the repository contains **140 media files**:
 
 - **30 registered and present:** 14 fonts, 15 status-bar textures, and 1 border.
-- **110 packaged but unregistered:** available by direct file path, but not exposed by this addon through LibSharedMedia.
+- **110 tracked but unregistered:** available by direct file path in a source checkout, but not exposed by this addon through LibSharedMedia.
 
-These counts cover tracked files below `background/`, `border/`, `font/`, `sound/`, and `statusbar/`. Registration is determined from `SharedMedia_Nistaux.lua`.
+These counts cover tracked files below `background/`, `border/`, `font/`, `sound/`, and `statusbar/`. Registration is determined from `SharedMedia_Nistaux.lua`. The custom release archive excludes the 41 files under `background/`; it includes the remaining 69 unregistered files because the approved `statusbar/` directory is packaged as a complete unit.
 
 | Term | Meaning |
 | --- | --- |
@@ -62,26 +73,15 @@ All 30 runtime registrations now resolve to exact tracked filenames. This is a t
 
 ## Unregistered corpus
 
-The remaining **110 files** are not registered by `SharedMedia_Nistaux.lua`, but they are still distributed by the Git repository and addon archive. Their unregistered state does not avoid licensing requirements.
+The remaining **110 files** are not registered by `SharedMedia_Nistaux.lua`. They remain tracked in the Git repository; the custom release archive includes only the 69 located under the allowlisted `statusbar/` directory and excludes the 41 under `background/`.
 
 The directory layout and many exact Git blob matches connect much of `background/` and the unregistered `statusbar/` subdirectories to ToxiUI. That establishes a strong likely/exact immediate source for groups such as installer artwork, armory/class artwork, logos, role/state icons, and theme/UI icons. It does **not** establish original ownership or separate redistribution permission. A complete path-by-path source map has not yet been recorded, so all 110 files remain **unknown rights** unless a file is later shown to be ToxiUI-owned (and restricted under its terms) or covered by a verified third-party license.
 
-Do not delete this corpus implicitly. The owner must decide whether to:
+Per the owner disposition above, retain this corpus without further path-level audit or remediation unless the owner later changes scope.
 
-1. remove all unregistered inventory because it is not part of the current LibSharedMedia surface;
-2. seek explicit permission from upstream authors;
-3. replace desired files with independently licensed equivalents; or
-4. retain only files whose exact source and license can be documented.
+## Maintenance status
 
-## Decisions required before issue #2 can close
-
-1. **Restricted or unresolved registered media:** approve removal/replacement of `BigNoodleToo.ttf`, `Expressway.ttf`, and ToxiUI fonts, or provide applicable permissions; separately identify the original owner/license for ToxiUI-included registered textures.
-2. **Unknown registered media:** decide whether to remove/replace unresolved fonts, `d1*`, and `Border_DropShadow.blp`, or fund a deeper source audit.
-3. **Unregistered files:** decide whether the 110-file inventory is useful enough to audit/retain; removing it is the lowest-maintenance option but is a product/content decision.
-4. **OFL fonts:** approve replacing or pinning the Montserrat/PT Sans binaries to official releases and keeping their required OFL notices accessible; standalone license copies are recommended for easier auditing.
-5. **Project license:** choose a license for repository-authored Lua/documentation only, with an explicit third-party-media exclusion.
-6. **Release metadata:** choose the next release version/tag before adding the matching TOC `## Version` value.
-7. **In-game validation:** test every removed/replaced registered media entry through a LibSharedMedia consumer before closing the issue.
+The audit findings remain available as context, but remediation and further provenance work are intentionally out of scope under the owner disposition above. Release metadata is supplied by the tag-driven package builder. No project-wide license is selected; this avoids implying that one license covers third-party media. In-game validation is still required whenever a registered filename, media file, or display name changes.
 
 ## Primary evidence and sources
 

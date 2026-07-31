@@ -25,3 +25,4 @@
 - Run `git diff --check` and inspect `git diff` and `git status` before reporting completion.
 - Clearly distinguish static repository validation from in-game testing that still needs to be performed.
 - Track actionable follow-up work in GitHub Issues rather than adding undocumented TODOs.
+- For releases, follow `docs/project-notes.md#releases`; validate with the standard-library tests and `tools/package_release.py`, and never substitute GitHub's automatic source archive for the custom install ZIP.

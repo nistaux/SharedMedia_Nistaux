@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run packaging tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build release archive
+        id: package
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          python tools/package_release.py --tag "$RELEASE_TAG" --revision HEAD
+          VERSION="${RELEASE_TAG#v}"
+          ASSET_PATH="dist/SharedMedia_Nistaux-${VERSION}.zip"
+          test -f "$ASSET_PATH"
+          printf 'asset_path=%s\n' "$ASSET_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          ASSET_PATH: ${{ steps.package.outputs.asset_path }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: >-
+          gh release create "$RELEASE_TAG" "$ASSET_PATH"
+          --verify-tag --generate-notes --title "$RELEASE_TAG"

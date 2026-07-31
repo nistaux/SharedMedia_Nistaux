@@ -1,1 +1,4 @@
 .pi-subagents/
+/dist/
+__pycache__/
+*.py[cod]

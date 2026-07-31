@@ -1,4 +1,5 @@
 ## Interface: 11503, 40400, 110000, 110002, 120000
 ## Title: SharedMedia_Nistaux
+## Version: @project-version@
 ## Dependencies: SharedMedia 
 SharedMedia_Nistaux.lua 

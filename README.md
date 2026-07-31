@@ -22,4 +22,10 @@ This addon does not require or directly integrate with consumer addons. It only 
 
 Media files that are not registered in `SharedMedia_Nistaux.lua` are not exposed by this addon through LibSharedMedia, although another addon could reference a packaged file directly by path. When adding or changing a registration, verify that its path exactly matches the packaged filename, extension, and case. See the [project notes](docs/project-notes.md#adding-or-changing-media) for the full workflow.
 
-Release versions use `YY.MM.dd` with an optional revision suffix, and Git tags use `vYY.MM.dd[.N]` (for example, `v26.01.27.1`).
+## Releases
+
+A pushed release tag builds an installable custom ZIP with one `SharedMedia_Nistaux/` root folder. The archive includes only `SharedMedia_Nistaux.lua`, `SharedMedia_Nistaux.toc`, `README.md`, and the complete `border/`, `font/`, and `statusbar/` directories. Repository-only files and unused top-level media directories are excluded.
+
+Future release tags use `vYY.M.D.<7-character-commit>`, for example `v26.7.31.abcdef0`. The packaged TOC receives the tag version without the leading `v`; the source TOC keeps its build token. Historical numeric revision tags remain valid.
+
+Download the custom `SharedMedia_Nistaux-<version>.zip` release asset for installation. GitHub's automatic “Source code” archives are unavoidable repository snapshots; they are not filtered and are not the install package.
