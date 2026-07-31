@@ -8,11 +8,11 @@ A personal LibSharedMedia media pack for World of Warcraft. It makes a curated s
 - Install this repository as `World of Warcraft/_retail_/Interface/AddOns/SharedMedia_Nistaux` (adjust the game flavor directory as needed).
 - Keep the folder name exactly `SharedMedia_Nistaux`; registered media paths depend on it.
 
-This addon does not require or directly integrate with Details. Details and other compatible addons can discover these media through LibSharedMedia.
+This addon does not require or directly integrate with consumer addons. It only registers media such as fonts and textures through LibSharedMedia for compatible addons to use.
 
 ## Repository guide
 
-- [`docs/project-notes.md`](docs/project-notes.md) — architecture, safe change workflow, Details investigation, validation, and known issues
+- [`docs/project-notes.md`](docs/project-notes.md) — architecture, safe change workflow, integration guidance, troubleshooting, validation, and known issues
 - [`AGENTS.md`](AGENTS.md) — concise repository-local instructions for Pi and other coding agents
 - [`SharedMedia_Nistaux.toc`](SharedMedia_Nistaux.toc) — addon metadata and load order
 - [`SharedMedia_Nistaux.lua`](SharedMedia_Nistaux.lua) — the complete runtime implementation

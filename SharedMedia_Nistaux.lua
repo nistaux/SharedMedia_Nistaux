@@ -39,7 +39,7 @@ LSM:Register("font", "- M 900", [[Interface\Addons\SharedMedia_Nistaux\font\Mont
 -- ToxiUI General Textures
 LSM:Register("statusbar", "BuiOnePixel", [[Interface\Addons\SharedMedia_Nistaux\statusbar\BuiOnePixel.tga]])
 LSM:Register("statusbar", "- ToxiUI", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-clean.tga]])
-LSM:Register("statusbar", "- Tx Fade", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-fade.tga]])
+LSM:Register("statusbar", "- Tx Fade", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-fade.blp]])
 -- ToxiUI Gradient Textures
 LSM:Register("statusbar", "- Tx Mid", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-grad.tga]])
 LSM:Register("statusbar", "- Tx Left", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-g1.tga]])
@@ -49,8 +49,8 @@ LSM:Register("statusbar", " d1 shadow", [[Interface\Addons\SharedMedia_Nistaux\s
 LSM:Register("statusbar", " d1 shadow border", [[Interface\Addons\SharedMedia_Nistaux\statusbar\d1-border.tga]])
 -- ToxiUI Alternatives (not in use)
 LSM:Register("statusbar", "- Tx Half", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-half.tga]])
-LSM:Register("statusbar", "- Tx Half Fade", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-half-transparent.tga]])
-LSM:Register("statusbar", "- Tx Half Fade Stroke", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-half-transparent-stroke.tga]])
+LSM:Register("statusbar", "- Tx Half Fade", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-half-transparent.blp]])
+LSM:Register("statusbar", "- Tx Half Fade Stroke", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-half-transparent-stroke.blp]])
 LSM:Register("statusbar", "- Tx Dark", [[Interface\Addons\SharedMedia_Nistaux\statusbar\ToxiUI-dark.tga]])
 LSM:Register("statusbar", "- Bezo", [[Interface\Addons\SharedMedia_Nistaux\statusbar\Bezo.blp]])
 LSM:Register("statusbar", "- Bezo Dark", [[Interface\Addons\SharedMedia_Nistaux\statusbar\Bezo-dark1.blp]])
