@@ -28,6 +28,7 @@ For a new task:
 | `README.md` | Human-facing project entry point |
 | `AGENTS.md` | Concise repository-local instructions for coding agents |
 | `docs/project-notes.md` | This technical guide and durable troubleshooting context |
+| [`docs/media-provenance.md`](media-provenance.md) | Bundled-media provenance, license evidence, and unresolved distribution decisions |
 
 ## Runtime architecture
 
@@ -95,8 +96,8 @@ Details consumes LibSharedMedia, so direct integration is normally unnecessary. 
 
 GitHub Issues is the source of truth for actionable work:
 
-- [#1 Fix invalid status-bar texture registrations](https://github.com/nistaux/SharedMedia_Nistaux/issues/1) — three registrations use `.tga` paths while the packaged files use `.blp`.
-- [#2 Complete distribution metadata and bundled-media provenance](https://github.com/nistaux/SharedMedia_Nistaux/issues/2) — add release metadata and document licensing/redistribution status.
+- [#1 Fix invalid status-bar texture registrations](https://github.com/nistaux/SharedMedia_Nistaux/issues/1) — the three path extensions are corrected in the current code; in-game rendering validation remains pending.
+- [#2 Complete distribution metadata and bundled-media provenance](https://github.com/nistaux/SharedMedia_Nistaux/issues/2) — add release metadata and resolve the licensing/redistribution findings recorded in [`docs/media-provenance.md`](media-provenance.md).
 
 Do not infer that an issue is resolved from this document; check its current GitHub state.
 
